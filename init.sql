@@ -58,6 +58,9 @@ CREATE TABLE scores (
     FOREIGN KEY (staff_id) REFERENCES staff(id)
 );
 
+-- Create a case-insensitive unique index on the email column
+CREATE UNIQUE INDEX staff_email_lower_idx ON staff (LOWER(email));
+
 -- Insert sample data into the franchises table
 INSERT INTO franchises (name) VALUES ('McDonalds'), ('Starbucks'), ('Subway');
 
@@ -84,3 +87,14 @@ INSERT INTO scores (date, staff_id, score) VALUES
 ('2024-09-01 12:00:00', (SELECT id FROM staff WHERE email = 'alice.johnson@example.com'), 78),
 ('2024-09-01 13:00:00', (SELECT id FROM staff WHERE email = 'bob.brown@example.com'), 82),
 ('2024-09-01 14:00:00', (SELECT id FROM staff WHERE email = 'carol.white@example.com'), 88);
+
+/*
+
+-- Grant USAGE and SELECT permissions on the sequence to the user
+GRANT USAGE, SELECT ON SEQUENCE staff_id_seq TO <INSERT_USER_HERE>;
+
+GRANT USAGE, SELECT ON SEQUENCE staff_id_seq TO <INSERT_USER_HERE>;
+
+-- Grant USAGE and SELECT permissions on all sequences in the public schema
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO <INSERT_USER_HERE>;
+*/
