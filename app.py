@@ -19,17 +19,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialise
 db = SQLAlchemy(app)
 
-class Staff(db.Model):
+class Franchise(db.Model):
+    __tablename__ = 'franchises'  # Updated to match the SQL file
     id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(255), nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    birthday = db.Column(db.Date)
-    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'), nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    
-    store = db.relationship('Store', backref='staff')
+    name = db.Column(db.String(255), unique=True, nullable=False)
 
 class Store(db.Model):
+    __tablename__ = 'stores'  # Updated to match the SQL file
     id = db.Column(db.Integer, primary_key=True)
     country = db.Column(db.String(100), nullable=False)
     franchise_id = db.Column(db.Integer, db.ForeignKey('franchises.id'), nullable=False)
@@ -37,11 +33,19 @@ class Store(db.Model):
 
     franchise = db.relationship('Franchise', backref='stores')
 
-class Franchise(db.Model):
+class Staff(db.Model):
+    __tablename__ = 'staff'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), unique=True, nullable=False)
+    full_name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    birthday = db.Column(db.Date)
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+
+    store = db.relationship('Store', backref='staff')
 
 class Score(db.Model):
+    __tablename__ = 'scores'  # Updated to match the SQL file
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, nullable=False)
     staff_id = db.Column(db.Integer, db.ForeignKey('staff.id'), nullable=False)
@@ -52,6 +56,11 @@ class Score(db.Model):
 @app.route('/signup', methods=['POST'])
 def create_staff():
     data = request.get_json()
+
+    # Check if email already exists
+    existing_staff = Staff.query.filter_by(email=data['email']).first()
+    if existing_staff:
+        return jsonify({'message': 'A user with this email already exists'}), 400
 
     # Hash the password
     hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
