@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
+import bcrypt
 
 # Load environmental variables
 load_dotenv()
@@ -47,6 +48,36 @@ class Score(db.Model):
     score = db.Column(db.Integer, nullable=False)
 
     staff = db.relationship('Staff', backref='scores')
+
+@app.route('/signup', methods=['POST'])
+def create_staff():
+    data = request.get_json()
+
+    # Hash the password
+    hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+
+    new_staff = Staff(
+        full_name=data['full_name'],
+        email=data['email'],
+        birthday=data['birthday'],
+        store_id=data['store_id'],
+        password=hashed_password.decode('utf-8')  # Store the hashed password as a string
+    )
+    
+    db.session.add(new_staff)
+    db.session.commit()
+    
+    return jsonify({'message': 'New staff created'})
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    staff = Staff.query.filter_by(email=data['email']).first()
+
+    if staff and bcrypt.checkpw(data['password'].encode('utf-8'), staff.password.encode('utf-8')):
+        return jsonify({'message': 'Login successful'})
+    else:
+        return jsonify({'message': 'Invalid credentials'}), 401
 
 if __name__ == '__main__':
     app.run(debug=True)
