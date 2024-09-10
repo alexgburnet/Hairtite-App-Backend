@@ -58,6 +58,14 @@ CREATE TABLE scores (
     FOREIGN KEY (staff_id) REFERENCES staff(staff_id)
 );
 
+-- Add learning resources table
+CREATE TABLE learning_resources (
+    resource_id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    url VARCHAR(255) NOT NULL
+);
+
 -- Create a case-insensitive unique index on the email column
 CREATE UNIQUE INDEX staff_email_lower_idx ON staff (LOWER(email));
 
@@ -87,6 +95,10 @@ INSERT INTO scores (date, staff_id, score) VALUES
 ('2024-09-01 12:00:00', (SELECT staff_id FROM staff WHERE email = 'alice.johnson@example.com'), 78),
 ('2024-09-01 13:00:00', (SELECT staff_id FROM staff WHERE email = 'bob.brown@example.com'), 82),
 ('2024-09-01 14:00:00', (SELECT staff_id FROM staff WHERE email = 'carol.white@example.com'), 88);
+
+-- Insert learning resources
+INSERT INTO learning_resources (title, description, url) VALUES
+('Whys is it so important?', '- How do customers react to finding hair in their food?\n- How would you deal with it?\n- Watch this video to find out!', 'https://youtube.com/shorts/2fs8kYYEGlI?feature=share');
 
 /*
 
