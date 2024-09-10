@@ -91,9 +91,9 @@ INSERT INTO scores (date, staff_id, score) VALUES
 /*
 
 -- Grant USAGE and SELECT permissions on the sequence to the user
-GRANT USAGE, SELECT ON SEQUENCE staff_id_seq TO <INSERT_USER_HERE>;
+GRANT USAGE, SELECT ON SEQUENCE staff_staff_id_seq TO <INSERT_USER_HERE>;
 
-GRANT USAGE, SELECT ON SEQUENCE staff_id_seq TO <INSERT_USER_HERE>;
+GRANT USAGE, SELECT ON SEQUENCE staff_staff_id_seq TO <INSERT_USER_HERE>;
 
 -- Grant USAGE and SELECT permissions on all sequences in the public schema
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO <INSERT_USER_HERE>;
