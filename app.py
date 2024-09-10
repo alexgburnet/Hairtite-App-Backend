@@ -3,12 +3,15 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import bcrypt
-from datetime import datetime
+from datetime import datetime, timedelta
+
+import jwt
 
 # Load environmental variables
 load_dotenv()
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Use the SQLALCHEMY_DATABASE_URI from the environment
 app.config['SQLALCHEMY_DATABASE_URI'] = (
@@ -16,6 +19,22 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"@{os.getenv('DATABASE_HOST')}/{os.getenv('DATABASE_NAME')}"
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+def generate_access_token(user_id):
+    expiration = datetime.utcnow() + timedelta(hours=1)
+    token = jwt.encode({
+        'user_id': user_id,
+        'exp': expiration
+    }, app.config['SECRET_KEY'], algorithm='HS256')
+    return token
+
+def generate_refresh_token(user_id):
+    expiration = datetime.utcnow() + timedelta(days=30)
+    refresh_token = jwt.encode({
+        'user_id': user_id,
+        'exp': expiration
+    }, app.config['SECRET_KEY'], algorithm='HS256')
+    return refresh_token
 
 # Initialise
 db = SQLAlchemy(app)
@@ -53,6 +72,31 @@ class Score(db.Model):
     date = db.Column(db.DateTime, nullable=False)
     staff_id = db.Column(db.Integer, db.ForeignKey('staff.staff_id'), nullable=False)  # Adjusted foreign key reference
     score = db.Column(db.Integer, nullable=False)
+
+class LearningResource(db.Model):
+    __tablename__ = 'learning_resources'
+    resource_id = db.Column(db.Integer, primary_key=True)  # Primary key
+    title = db.Column(db.String(255), nullable=False)  # Resource title
+    description = db.Column(db.Text)  # Optional description
+    url = db.Column(db.String(255), nullable=False) # URL to the resource
+
+@app.route('/refresh', methods=['POST'])
+def refresh():
+    data = request.get_json()
+    refresh_token = data['refresh_token']
+
+    try:
+        decoded_refresh_token = jwt.decode(refresh_token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        staff_id = decoded_refresh_token['staff_id']
+
+        # If refresh token is valid, generate a new access token
+        new_access_token = generate_access_token(staff_id)
+
+        return jsonify({'access_token': new_access_token}), 200
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': 'Refresh token expired'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid token'}), 401
 
 @app.route('/api/countries', methods=['GET'])
 def get_countries():
@@ -92,6 +136,14 @@ def get_branches():
 
     return jsonify([branch[0] for branch in branches])
 
+@app.route('/api/learning-resources', methods=['GET'])
+def get_learning_resources():
+    resources = LearningResource.query.all()
+    return jsonify([{
+        'title': resource.title,
+        'description': resource.description,
+        'url': resource.url
+    } for resource in resources])
 
 @app.route('/get-store-id', methods=['POST'])
 def get_store_id():
@@ -156,9 +208,35 @@ def login():
     staff = Staff.query.filter_by(email=data['email']).first()
 
     if staff and bcrypt.checkpw(data['password'].encode('utf-8'), staff.password.encode('utf-8')):
-        return jsonify({'message': 'Login successful'})
+
+        access_token = generate_access_token(staff.staff_id)
+        refresh_token = generate_refresh_token(staff.staff_id)
+
+        return jsonify({
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }), 200
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
+    
+@app.route('/add-score', methods=['POST'])
+def add_score():
+    data = request.get_json()
+
+    if not data['staff_id'] or not data['score']:
+        return jsonify({'message': 'Missing data'}), 400
+
+    new_score = Score(
+        # date in yyyy-mm-dd hh:mm:ssformat
+        date = datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        staff_id=data['staff_id'],
+        score=data['score']
+    )
+
+    db.session.add(new_score)
+    db.session.commit()
+
+    return jsonify({'message': 'New score added'}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
