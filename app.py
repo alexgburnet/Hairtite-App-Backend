@@ -23,7 +23,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 def generate_access_token(user_id):
     expiration = datetime.utcnow() + timedelta(hours=1)
     token = jwt.encode({
-        'user_id': user_id,
+        'staff_id': user_id,
         'exp': expiration
     }, app.config['SECRET_KEY'], algorithm='HS256')
     return token
@@ -31,7 +31,7 @@ def generate_access_token(user_id):
 def generate_refresh_token(user_id):
     expiration = datetime.utcnow() + timedelta(days=30)
     refresh_token = jwt.encode({
-        'user_id': user_id,
+        'staff_id': user_id,
         'exp': expiration
     }, app.config['SECRET_KEY'], algorithm='HS256')
     return refresh_token
@@ -79,6 +79,15 @@ class LearningResource(db.Model):
     title = db.Column(db.String(255), nullable=False)  # Resource title
     description = db.Column(db.Text)  # Optional description
     url = db.Column(db.String(255), nullable=False) # URL to the resource
+
+class Question(db.Model):
+    __tablename__ = 'questions'
+    question_id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.Text, nullable=False)
+    answer = db.Column(db.Boolean, nullable=False)
+    info = db.Column(db.Text, nullable=False)
+    followup = db.Column(db.Text, nullable=False)
+    fanswer = db.Column(db.Boolean, nullable=False)
 
 @app.route('/refresh', methods=['POST'])
 def refresh():
@@ -144,6 +153,17 @@ def get_learning_resources():
         'description': resource.description,
         'url': resource.url
     } for resource in resources])
+
+@app.route('/api/questions', methods=['GET'])
+def get_questions():
+    questions = Question.query.all()
+    return jsonify([{
+        'question': question.question,
+        'answer': question.answer,
+        'info': question.info,
+        'followup': question.followup,
+        'fanswer': question.fanswer
+    } for question in questions])
 
 @app.route('/get-store-id', methods=['POST'])
 def get_store_id():
@@ -239,4 +259,4 @@ def add_score():
     return jsonify({'message': 'New score added'}), 201
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=3000)
