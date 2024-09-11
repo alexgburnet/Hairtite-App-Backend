@@ -66,6 +66,15 @@ CREATE TABLE learning_resources (
     url VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE questions (
+    question_id SERIAL PRIMARY KEY,
+    question TEXT NOT NULL,
+    answer BOOLEAN NOT NULL,
+    info TEXT NOT NULL,
+    followup TEXT NOT NULL,
+    fanswer BOOLEAN NOT NULL
+);
+
 -- Create a case-insensitive unique index on the email column
 CREATE UNIQUE INDEX staff_email_lower_idx ON staff (LOWER(email));
 
@@ -99,6 +108,19 @@ INSERT INTO scores (date, staff_id, score) VALUES
 -- Insert learning resources
 INSERT INTO learning_resources (title, description, url) VALUES
 ('Whys is it so important?', '- How do customers react to finding hair in their food?\n- How would you deal with it?\n- Watch this video to find out!', 'https://youtube.com/shorts/2fs8kYYEGlI?feature=share');
+
+-- Insert into questions
+
+INSERT INTO questions (question, answer, info, followup, fanswer)
+VALUES
+('During an average of 8 hour-shift we average human beings naturally shed 40 – 130 hairs every day.', true, 'An average of 40 -130 hair-shafts will be lost to natural cyclical processes per day.', 'The average human sheds up to 130 hairs naturally every day.', true),
+('Modern styling & hair-care practices damages hair', true, 'A) Excessive heat - higher temperature from / of hair driers / styling tongues/straighteners\n\nB) Perm solutions, dyes / straightening chemicals – Trichologists believe', 'Using hot tools like dryers or straighteners and chemicals like perm solutions impacts hair contamination.', true),
+('Washing and combing removes all residual hair?', false, '', 'Daily combed hair, well-groomed beard, neatly trimmed brows and daily showering prevent removal of all loose hairs.', false),
+('Digested hair contained within foods will make you physically sick?', false, 'Hair is protein and can be digested!', 'If you eat hair, you are likely to be sick', false),
+('digested hair contained within foods is likely to make you feel sick', true, 'In most people the thought makes people feel sick – can and in most people does trigger an emotional reaction \n\nMost people will stop eating and it will kill their appetite – AND they will stop eating', 'If you find hair in your meal, even if you don’t eat it you might feel sick.', true),
+('Contact with the head can cause food poisoning?', true, 'All people – with good hygiene – sweaty areas of skin such as the scalp contain food poisoning pathogen Staphylocci Aureus. If you touch your hand and then food – whether your hand is gloved or not – you can transfer food poisoning pathogens to the food you serve to your customers. – it’s a fact!', 'If I scratch my head, it is possible I can cause food poisoning?', true),
+('Your actions help prevent food poisoning?', true, '', 'How I work helps prevent food poisoning.', true),
+('Short hair poses a greater risk of contamination?', true, 'Short hair is more likely to stand upright and protrude through gaps including needle holes in all knitted, woven particularly non-woven fabrics.\n\nShort hair is less easily seen than long hair and therefore, may fall into food unseen and when eating food seen as the food is closer to the eyes and mouth.', 'short hair has a greater risk of contamination than long hair?', true);
 
 /*
 
