@@ -17,7 +17,7 @@ The Hairtite app backend provides several API endpoints for user management, dat
 ### Database
 
 <p align="center">
-  <img src="https://github.com/alexgburnet/Hairtite-App-Backend/blob/main/Assets/Entity-Relationship%20Diagram.png" alt="Diagram for database" width="500"/>
+  <img src="https://github.com/alexgburnet/Hairtite-App-Backend/blob/main/Assets/Entity-Relationship%20Diagram.png" alt="Diagram for database" width="700"/>
 </p>
 
 see init.sql for the database. Make sure to uncomment the code for the permissions, and change the name to your user
