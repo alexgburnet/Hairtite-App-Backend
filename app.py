@@ -258,5 +258,24 @@ def add_score():
 
     return jsonify({'message': 'New score added'}), 201
 
+@app.route('/api/get-scores', methods=['POST'])
+def get_scores():
+    data = request.get_json()
+
+    if not data or 'staff_id' not in data:
+        return jsonify({'message': 'Missing data'}), 400
+
+    staff_id = data['staff_id']
+    scores = Score.query.filter_by(staff_id=staff_id) \
+                        .order_by(Score.date.desc()) \
+                        .limit(6) \
+                        .all()
+    
+    # Ensure date is in a string format that the frontend expects
+    return jsonify([{
+        'score': score.score,
+        'date': score.date
+    } for score in scores])
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=3000)
