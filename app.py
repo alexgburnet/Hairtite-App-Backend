@@ -74,7 +74,7 @@ class Question(db.Model):
     fanswer = db.Column(db.Boolean, nullable=False)
 
 def generate_access_token(user_id):
-    expiration = datetime.now(tz=timezone.utc) - timedelta(hours=1)
+    expiration = datetime.now(tz=timezone.utc) + timedelta(hours=1)
     token = jwt.encode({
         'staff_id': user_id,
         'exp': expiration
