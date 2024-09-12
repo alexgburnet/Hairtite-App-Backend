@@ -20,22 +20,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-def generate_access_token(user_id):
-    expiration = datetime.utcnow() + timedelta(hours=1)
-    token = jwt.encode({
-        'staff_id': user_id,
-        'exp': expiration
-    }, app.config['SECRET_KEY'], algorithm='HS256')
-    return token
-
-def generate_refresh_token(user_id):
-    expiration = datetime.utcnow() + timedelta(days=30)
-    refresh_token = jwt.encode({
-        'staff_id': user_id,
-        'exp': expiration
-    }, app.config['SECRET_KEY'], algorithm='HS256')
-    return refresh_token
-
 # Initialise
 db = SQLAlchemy(app)
 
@@ -88,6 +72,22 @@ class Question(db.Model):
     info = db.Column(db.Text, nullable=False)
     followup = db.Column(db.Text, nullable=False)
     fanswer = db.Column(db.Boolean, nullable=False)
+
+def generate_access_token(user_id):
+    expiration = datetime.utcnow() + timedelta(hours=1)
+    token = jwt.encode({
+        'staff_id': user_id,
+        'exp': expiration
+    }, app.config['SECRET_KEY'], algorithm='HS256')
+    return token
+
+def generate_refresh_token(user_id):
+    expiration = datetime.utcnow() + timedelta(days=30)
+    refresh_token = jwt.encode({
+        'staff_id': user_id,
+        'exp': expiration
+    }, app.config['SECRET_KEY'], algorithm='HS256')
+    return refresh_token
 
 @app.route('/refresh', methods=['POST'])
 def refresh():
