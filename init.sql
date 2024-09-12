@@ -1,23 +1,5 @@
 -- for hairtiteapp database in psql
 
-/*
-
--- Create a new user
-CREATE USER <INSERT USER HERE> WITH PASSWORD '<INSERT PASSWORD HERE>';
-
--- Grant permissions on the database
-GRANT CONNECT ON DATABASE hairtiteapp TO <INSERT USER HERE>;
-GRANT USAGE ON SCHEMA public TO <INSERT USER HERE>;
-
--- Grant permissions on existing tables
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO <INSERT USER HERE>;
-
--- Grant default privileges on future tables
-ALTER DEFAULT PRIVILEGES IN SCHEMA public
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO <INSERT USER HERE>;
-
-*/
-
 DROP TABLE IF EXISTS scores;
 DROP TABLE IF EXISTS staff;
 DROP TABLE IF EXISTS stores;
@@ -107,7 +89,9 @@ INSERT INTO scores (date, staff_id, score) VALUES
 
 -- Insert learning resources
 INSERT INTO learning_resources (title, description, url) VALUES
-('Whys is it so important?', '- How do customers react to finding hair in their food?\n- How would you deal with it?\n- Watch this video to find out!', 'https://youtube.com/shorts/2fs8kYYEGlI?feature=share');
+('Whys is it so important?', '- How do customers react to finding hair in their food?\n- How would you deal with it?\n- Watch this video to find out!', 'https://youtube.com/shorts/2fs8kYYEGlI?feature=share'),
+('Why keep hair under wraps?', '- Why is it important to keep hair covered?\n- What are the risks of not doing so?\n- Watch this video to find out!', 'https://www.youtube.com/shorts/fLxARwbSFIU'),
+('Public Reactions; Hair Found In My Food!', '- What’s your reaction?\n- See how different people handle this gross surprise!', 'https://www.youtube.com/shorts/VsQRan7hapo')
 
 -- Insert into questions
 
@@ -124,6 +108,21 @@ VALUES
 
 /*
 
+
+-- Create a new user
+CREATE USER <INSERT USER HERE> WITH PASSWORD '<INSERT PASSWORD HERE>';
+
+-- Grant permissions on the database
+GRANT CONNECT ON DATABASE hairtiteapp TO <INSERT USER HERE>;
+GRANT USAGE ON SCHEMA public TO <INSERT USER HERE>;
+
+-- Grant permissions on existing tables
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO <INSERT USER HERE>;
+
+-- Grant default privileges on future tables
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO <INSERT USER HERE>;
+
 -- Grant USAGE and SELECT permissions on the sequence to the user
 GRANT USAGE, SELECT ON SEQUENCE staff_staff_id_seq TO <INSERT_USER_HERE>;
 
@@ -131,4 +130,9 @@ GRANT USAGE, SELECT ON SEQUENCE staff_staff_id_seq TO <INSERT_USER_HERE>;
 
 -- Grant USAGE and SELECT permissions on all sequences in the public schema
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO <INSERT_USER_HERE>;
+
+
+INSERT INTO stores (country, franchise_id, branch) VALUES
+('United Kingdom', (SELECT franchise_id FROM franchises WHERE name = 'McDonalds'), 'Ilkeston'),
+('United Kingdom', (SELECT franchise_id FROM franchises WHERE name = 'McDonalds'), 'Long Eaton'),
 */
