@@ -91,7 +91,7 @@ INSERT INTO scores (date, staff_id, score) VALUES
 INSERT INTO learning_resources (title, description, url) VALUES
 ('Whys is it so important?', '- How do customers react to finding hair in their food?\n- How would you deal with it?\n- Watch this video to find out!', 'https://youtube.com/shorts/2fs8kYYEGlI?feature=share'),
 ('Why keep hair under wraps?', '- Why is it important to keep hair covered?\n- What are the risks of not doing so?\n- Watch this video to find out!', 'https://www.youtube.com/shorts/fLxARwbSFIU'),
-('Public Reactions; Hair Found In My Food!', '- What’s your reaction?\n- See how different people handle this gross surprise!', 'https://www.youtube.com/shorts/VsQRan7hapo')
+('Public Reactions; Hair Found In My Food!', '- What’s your reaction?\n- See how different people handle this gross surprise!', 'https://www.youtube.com/shorts/VsQRan7hapo');
 
 -- Insert into questions
 
