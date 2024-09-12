@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import bcrypt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import jwt
 
@@ -74,7 +74,7 @@ class Question(db.Model):
     fanswer = db.Column(db.Boolean, nullable=False)
 
 def generate_access_token(user_id):
-    expiration = datetime.utcnow() + timedelta(hours=1)
+    expiration = datetime.now(tz=timezone.utc) - timedelta(hours=1)
     token = jwt.encode({
         'staff_id': user_id,
         'exp': expiration
@@ -82,7 +82,7 @@ def generate_access_token(user_id):
     return token
 
 def generate_refresh_token(user_id):
-    expiration = datetime.utcnow() + timedelta(days=30)
+    expiration = datetime.now(tz=timezone.utc) + timedelta(days=30)
     refresh_token = jwt.encode({
         'staff_id': user_id,
         'exp': expiration
